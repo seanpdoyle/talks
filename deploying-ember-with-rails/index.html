@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Ember &amp; Rails
+
+---
+
+# Approaches
+
+1. ember-rails
+1. ember-cli-rails
+1. EmberCLI
+
+---
+
+# ember-rails
+
+```ruby
+# Gemfile
+
+gem 'ember-rails'
+gem 'ember-source', '1.10.0'
+gem 'ember-data-source', '1.0.0.beta.15'
+```
+
+```console
+$ rails generate ember:install --app-name app
+```
+
+```console
+$ tree app/assets/javascripts
+
+├── application.js
+├── adapters
+├── components
+├── controllers
+├── helpers
+├── mixins
+├── models
+├── router.js
+├── routes
+├── store.js
+├── templates
+│   └── components
+└── views
+```
+
+---
+
+# ember-rails
+
+`app/assets/javascripts/application.js`:
+
+```javascript
+//= require jquery
+//= require jquery_ujs
+//= require handlebars
+//= require ember
+//= require ember-data
+//= require_self
+//= require ./app
+
+window.App = Ember.Application.create();
+```
+
+`app/assets/javascripts/app.js`:
+
+```javascript
+//= require_tree ./adapters
+//= require_tree ./mixins
+//= require_tree ./models
+//= require_tree ./controllers
+//= require_tree ./views
+//= require_tree ./helpers
+//= require_tree ./components
+//= require_tree ./templates
+//= require_tree ./routes
+//= require ./router
+//= require_self
+```
+
+---
+
+# ember-rails
+
+`config/routes.rb`:
+
+```ruby
+MyApplication::Application.routes.draw do
+  get '*ember' => 'ember#index'
+end
+```
+
+`app/controllers/ember_controller.rb`:
+
+```ruby
+class EmberController < ApplicationController
+  def index
+    render nothing: true, layout: "application"
+  end
+end
+```
+
+---
+
+# ember-rails
+
+`app/views/layouts/application.html.erb`:
+
+```erb
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="ROBOTS" content="NOODP" />
+  <meta name="viewport" content="initial-scale=1" />
+  <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon" />
+  <%= csrf_meta_tags %>
+  <%= stylesheet_link_tag "application", media: "all" %>
+</head>
+<body>
+  <%= javascript_include_tag "application" %>
+</body>
+</html>
+```
+
+---
+
+# ember-rails &amp; test_squad
+
+```ruby
+source 'https://rails-assets.org' do
+  gem 'rails-assets-qunit'
+end
+
+group :development, :test do
+  gem 'test_squad'
+end
+```
+
+```console
+$ rails generate test_squad:install --framework ember
+```
+
+```console
+$ tree test/javascript
+
+├── acceptance
+├── components
+├── models
+├── routes
+├── test_helper.js
+├── test_squad.rb
+├── unit
+└── views
+```
+
+---
+
+# ember-rails &amp; test_squad
+
+`test/javascript/test_squad.rb`:
+
+```ruby
+TestSquad.configure do |config|
+  config.framework = 'ember'
+end
+```
+
+`test/javascript/test_helper.js`:
+
+```javascript
+//= require application
+//= require_self
+//= require_tree ./acceptance
+//= require_tree ./components
+//= require_tree ./models
+//= require_tree ./routes
+//= require_tree ./unit
+//= require_tree ./views
+
+// Set up Ember testing.
+App.rootElement = '#ember-testing';
+App.setupForTesting();
+App.injectTestHelpers();
+```
+
+---
+
+# ember-rails &amp; capybara
+
+```ruby
+feature "User does something", :js do
+  scenario "inside of ember" do
+    visit "/"
+
+    expect(page).to have_content("Hello World from Ember!")
+  end
+end
+```
+
+---
+
+# ember-rails
+
+Pros:
+
+1. Sprockets / Asset Pipeline integration
+1. Enables true end-to-end testing
+
+Cons:
+
+1. Front-end code buried in `app/assets/javascripts`
+1. Integrating with addon ecosystem is tedious
+1. EmberCLI is the future (according to the core team)
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
