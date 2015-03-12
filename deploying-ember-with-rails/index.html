@@ -442,6 +442,30 @@ $ tree my-app/app
 
 ---
 
+# ember-cli: libraries and addons
+
+## [`EmberAddons`](http://www.emberaddons.com/?query=jquery-ui)
+
+```console
+$ ember install:addon ember-cli-jquery-ui
+```
+
+`Brocfile.js`:
+
+```javascript
+var app = new EmberApp({
+  "ember-cli-jquery-ui": { "theme": "ui-darkness" },
+});
+```
+
+`app/templates/schedule.hbs`:
+
+```hbs
+{{jqui-datepicker value=model.startDate}}
+```
+
+---
+
 layout: true
 
 # ember-cli &amp; Rails API
@@ -453,12 +477,12 @@ layout: true
 ```javascript
 module.exports = function(environment) {
   // ... other environment setup ...
-  if (environment === 'development') {
-    ENV.APP.API_HOST = 'http://localhost:3000';
+  if (environment === "development") {
+    ENV.APP.API_HOST = "http://localhost:3000";
   }
 
-  if (environment === 'production') {
-    ENV.APP.API_HOST = 'https://api.example.com';
+  if (environment === "production") {
+    ENV.APP.API_HOST = "https://api.example.com";
   }
 };
 ```
@@ -526,9 +550,7 @@ $ npm test
 
 ---
 
-# ember-cli deployments: `heroku`
-
-[`tonycoco/heroku-buildpack-ember-cli`](https://github.com/tonycoco/heroku-buildpack-ember-cli)
+# ember-cli deployments: [`heroku`](https://github.com/tonycoco/heroku-buildpack-ember-cli)
 
 ```console
 $ heroku create
@@ -536,7 +558,62 @@ $ heroku config:set BUILDPACK_URL=https://github.com/tonycoco/heroku-buildpack-e
 $ git push heroku master
 ```
 
+## 👍
 
+* Simple
+* Free (for the time being)
+* Future integration with FastBoot?
+
+## 👎
+
+* Serving static files from a web process is inefficient
+* No CDN support out of the box
+* Deploys are lengthy due to installing dependencies and compiling assets
+
+---
+
+# ember-cli deployments: [`divshot`](https://divshot.com/)
+
+```console
+$ npm install -g divshot
+$ divshot login
+$ ember install:addon ember-cli-divshot
+$ ember divshot push production
+```
+
+## 👍
+
+* Simple
+* Free (for low-bandwidth apps)
+* Integrated Platform (think Heroku, for static sites)
+
+## 👎
+
+* Can't integrate with FastBoot
+
+---
+
+# ember-cli deployments: [`ember-cli-deploy`](https://github.com/ember-cli/ember-cli-deploy)
+
+```console
+$ ember install:addon ember-cli-deploy
+$ ember deploy
+```
+
+```console
+$ open http://example.com/app?revision=my-app:$SHA
+$ ember deploy:activate $SHA
+```
+
+## 👍
+
+* Maintained by `ember-cli` core team
+* Adapter pattern for deploys
+
+## 👎
+
+* Recently merged 3 competing solutions. Details are still in flux
+* Only official support for Redis / S3 deployments
 
 ---
 
