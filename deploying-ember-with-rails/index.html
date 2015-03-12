@@ -197,6 +197,10 @@ window.App = Ember.Application.create();
 
 ```ruby
 MyApplication::Application.routes.draw do
+  namespace :api do
+    # /api routes
+  end
+
   # route all requests to Ember
   get "*ember" =&gt; "ember#index"
 end
@@ -211,6 +215,24 @@ class EmberController &lt; ApplicationController
   end
 end
 ```
+---
+
+layout: false
+
+# ember-rails: ActiveModel Adapter
+
+`app/assets/javascripts/adapters/application.js`:
+
+```javascript
+App.ApplicationAdapter = DS.ActiveModelAdapter({
+  namespace: "api",
+
+  headers: function() {
+    "X-CSRF-Token": $('meta[name="csrf-token"]').attr("content"),
+  }.property().volatile(),
+});
+```
+
 ---
 
 layout: true
