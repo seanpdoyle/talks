@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Title</title>
+    <title>Ember &amp; Rails</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style type="text/css">
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -13,7 +13,14 @@
         font-family: 'Yanone Kaffeesatz';
         font-weight: normal;
       }
+      a {
+        text-decoration: none;
+      }
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+
+      iframe {
+        min-height: 450px !important;
+      }
     </style>
   </head>
   <body>
@@ -25,22 +32,76 @@ class: center, middle
 
 ---
 
-# Approaches
+class: center, middle
 
-1. ember-rails
-1. ember-cli-rails
-1. EmberCLI
+## &lt; script &gt;
+## [`ember-rails`](https://github.com/emberjs/ember-rails)
+## [`ember-cli`](https://github.com/ember-cli/ember-cli)
+## [`ember-cli-rails`](https://github.com/rwz/ember-cli-rails)
 
 ---
 
+layout: true
+
+# &lt; script &gt;
+
+---
+
+<a class="jsbin-embed" href="http://emberjs.jsbin.com/neweva/1/embed?html,js,output">JS Bin</a>
+
+---
+
+## required
+
+* [`jquery`](http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js)
+* [`ember-template-compiler`](http://builds.emberjs.com/tags/v1.10.0/ember-template-compiler.js)
+* [`ember.js`](http://builds.emberjs.com/release/ember.js)
+
+### Optional
+
+* [`ember-data.js`](http://builds.emberjs.com/canary/ember-data.js)
+
+---
+
+layout: false
+
+# &lt; script &gt; 👍
+
+* Simple
+* Static
+* Separation of Client and Server
+* Easy to deploy
+  * GitHub pages
+  * Upload to S3, serve over Cloudfront CDN
+  * FTP to your GeoCities page
+
+---
+
+# &lt; script &gt; 👎
+
+* Everything is exposed on `window`
+* Difficult to maintain
+* Difficult to extend with plugins / addons
+* No build step
+  * No minification / concatenation / uglification / etc.
+* No first class test support
+* API via Cross-Origin Resource Sharing
+  * [not yet *fully* supported on all platforms](http://caniuse.com/#feat=cors)
+
+---
+
+layout: true
+
 # ember-rails
+
+---
 
 `Gemfile`:
 
 ```ruby
-gem 'ember-rails'
-gem 'ember-source', '1.10.0'
-gem 'ember-data-source', '1.0.0.beta.15'
+gem "ember-rails"
+gem "ember-source", "1.10.0"
+gem "ember-data-source", "1.0.0.beta.15" # optional
 ```
 
 ```console
@@ -66,8 +127,6 @@ $ tree app/assets/javascripts
 ```
 
 ---
-
-# ember-rails
 
 `app/assets/javascripts/application.js`:
 
@@ -101,30 +160,6 @@ window.App = Ember.Application.create();
 
 ---
 
-# ember-rails
-
-`config/routes.rb`:
-
-```ruby
-MyApplication::Application.routes.draw do
-  get '*ember' => 'ember#index'
-end
-```
-
-`app/controllers/ember_controller.rb`:
-
-```ruby
-class EmberController < ApplicationController
-  def index
-    render nothing: true, layout: "application"
-  end
-end
-```
-
----
-
-# ember-rails
-
 `app/views/layouts/application.html.erb`:
 
 ```erb
@@ -145,15 +180,40 @@ end
 
 ---
 
-# ember-rails &amp; test_squad
+`config/routes.rb`:
 
 ```ruby
-source 'https://rails-assets.org' do
-  gem 'rails-assets-qunit'
+MyApplication::Application.routes.draw do
+  # route all requests to Ember
+  get "*ember" =&gt; "ember#index"
+end
+```
+
+`app/controllers/ember_controller.rb`:
+
+```ruby
+class EmberController &lt; ApplicationController
+  def index
+    render nothing: true, layout: "application"
+  end
+end
+```
+
+---
+
+layout: true
+
+# ember-rails &amp; test_squad
+
+---
+
+```ruby
+source "https://rails-assets.org" do
+  gem "rails-assets-qunit"
 end
 
 group :development, :test do
-  gem 'test_squad'
+  gem "test_squad"
 end
 ```
 
@@ -162,7 +222,7 @@ $ rails generate test_squad:install --framework ember
 ```
 
 ```console
-$ tree test/javascript
+$ tree spec/javascript
 
 ├── acceptance
 ├── components
@@ -176,17 +236,15 @@ $ tree test/javascript
 
 ---
 
-# ember-rails &amp; test_squad
-
-`test/javascript/test_squad.rb`:
+`spec/javascript/test_squad.rb`:
 
 ```ruby
 TestSquad.configure do |config|
-  config.framework = 'ember'
+  config.framework = "ember"
 end
 ```
 
-`test/javascript/test_helper.js`:
+`spec/javascript/test_helper.js`:
 
 ```javascript
 //= require application
@@ -199,20 +257,38 @@ end
 //= require_tree ./views
 
 // Set up Ember testing.
-App.rootElement = '#ember-testing';
+App.rootElement = "#ember-testing";
 App.setupForTesting();
 App.injectTestHelpers();
 ```
 
 ---
 
-# ember-rails &amp; test_squad
+`spec/javascript/unit/foo_test.js`:
+
+```javascript
+module('The answer to life the universe and everything', {});
+
+test('the answer is 42', function(assert) {
+  assert.equal(7 * 6, 42);
+});
+```
+
+```console
+$ open http://localhost:3000/tests
+```
 
 <img src="https://github.com/fnando/test_squad/raw/master/screenshots/qunit.png" alt="test squad">
 
 ---
 
+layout: true
+
 # ember-rails &amp; capybara
+
+---
+
+`spec/features/user_does_something_spec.rb`:
 
 ```ruby
 feature "User does something", :js do
@@ -225,56 +301,75 @@ end
 ```
 
 ---
+layout: false
 
-# ember-rails
+# ember-rails: test_squad &amp; capybara
 
-Pros:
+`Rakefile`:
 
-1. Sprockets / Asset Pipeline integration
-1. No change to the deployment process
-1. Enables true end-to-end testing
+```ruby
+require File.expand_path('../config/application', __FILE__)
 
-Cons:
+MyApp::Application.load_tasks
 
-1. Everything is exposed on `window`
-1. EmberCLI is the future (according to the core team)
-1. Integrating with EmberCLI addon ecosystem is tedious
-1. Front-end code buried in `app/assets/javascripts`
-1. No separation of API and front-end
+task default: [:spec, :test_squad]
+```
 
 ---
 
+# ember-rails 👍
+
+* Deep integration with Sprockets &amp; the Asset Pipeline
+* No change to your deployment process
+* Enables true end-to-end testing with JavaScript enabled feature tests
+
+---
+
+# ember-rails 👎
+
+* No strict conventions
+  * Just Sprockets
+* Everything is exposed on `window`
+* Unlikely to benefit from innovation in the community
+  * Ember leadership focussed on EmberCLI
+  * Integrating with EmberCLI addon ecosystem is tedious
+* Front-end code buried in `app/assets/javascripts`
+* No separation between Client and Server
+
+---
+
+layout: true
+
 # ember-cli-rails
+
+---
 
 `Gemfile`:
 
 ```ruby
-gem 'ember-cli-rails'
+gem "ember-cli-rails"
 ```
 
 `config/initializers/ember-cli.rb`:
 
 ```ruby
 EmberCLI.configure do |config|
- config.app :frontend
+ config.app :frontend, path: Rails.root.join("frontend")
 end
 ```
 
 ```console
-$ cd app
 $ ember new frontend
 $ npm install --save-dev ember-cli-rails-addon@0.0.11
 ```
 
 ---
 
-# ember-cli-rails
-
 `config/routes.rb`:
 
 ```ruby
 MyApplication::Application.routes.draw do
-  root 'application#index'
+  root "application#index"
 end
 ```
 
@@ -287,6 +382,8 @@ end
 
 ---
 
+layout: false
+
 # ember-cli-rails testing
 
 `config/routes.rb`:
@@ -294,7 +391,7 @@ end
 ```ruby
 MyApplication::Application.routes.draw do
   if Rails.env.development?
-    mount EmberCLI::Engine => 'tests'
+    mount EmberCLI::Engine =&gt; "tests"
   end
 end
 ```
@@ -346,13 +443,15 @@ $ heroku config:add NPM_CONFIG_PRODUCTION=false
 
 # ember-cli-rails &amp; [heroku][heroku-example]
 
-`package.json`:
+[`package.json`](https://github.com/heroku/heroku-buildpack-nodejs/pull/203):
 
 ```json
-{}
+{
+  "cache_directories": ["frontend/bower_components", "frontend/node_modules"]
+}
 ```
 
-`app/frontend/package.json`:
+`frontend/package.json`:
 
 ```json
 
@@ -374,10 +473,16 @@ $ git push heroku master
 
 
     </textarea>
+    <script src="http://static.jsbin.com/js/embed.js"></script>
     <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
     </script>
     <script>
-      var slideshow = remark.create();
+      var slideshow = remark.create({
+        ratio: "16:9",
+        navigation: {
+          scroll: false,
+        }
+      });
     </script>
   </body>
 </html>
