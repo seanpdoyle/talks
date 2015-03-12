@@ -18,9 +18,10 @@
       }
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
 
-      iframe {
-        min-height: 450px !important;
-      }
+      iframe { min-height: 450px !important; }
+
+      img { max-width: 80%; }
+
     </style>
   </head>
   <body>
@@ -55,15 +56,17 @@ layout: true
 
 <a class="jsbin-embed" href="http://emberjs.jsbin.com/neweva/1/embed?html,js,output">JS Bin</a>
 
----
+???
 
-## required
+Library and Plugins via script tags
+
+# required
 
 * [`jquery`](http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js)
 * [`ember-template-compiler`](http://builds.emberjs.com/tags/v1.10.0/ember-template-compiler.js)
 * [`ember.js`](http://builds.emberjs.com/release/ember.js)
 
-### Optional
+# Optional
 
 * [`ember-data.js`](http://builds.emberjs.com/canary/ember-data.js)
 
@@ -75,25 +78,44 @@ layout: false
 
 * Simple
 * Static
-* Separation of Client and Server
+* Clean separation of Client and Server
 * Easy to deploy
-  * GitHub pages
-  * Upload to S3, serve over Cloudfront CDN
-  * FTP to your GeoCities page
+  * Upload to S3, Dropbox, GitHub pages, Divshot, FTP to your GeoCities page, etc
+  * Serve behind a CDN like Cloudfront, Fastly, etc.
   * Serve from Rails' `public/` directory
+* Could be version controlled in the same repository as Rails app
+
+???
+
+Doesn't require installing *ANY* tooling
+
+Imagine a world without:
+
+* installing ruby
+* installing node
+* `bundle install`
+* `bower install`
+* `npm install`
+
+Version controlled in same repo if served from Rails' `public/` directory
 
 ---
 
 # &lt; script &gt; 👎
 
-* Everything is exposed on `window`
 * Difficult to maintain
 * Difficult to extend with plugins / addons
+* Everything is exposed on `window`
 * No build step
   * No minification / concatenation / uglification / etc.
 * No first class test support
-* API via Cross-Origin Resource Sharing
-  * [not yet *fully* supported on all platforms](http://caniuse.com/#feat=cors)
+* Unless served from within Rails, requires separate domain
+  * Cross-Origin Resource Sharing is [not yet *fully* supported on all platforms](http://caniuse.com/#feat=cors)
+  * Requires Token or Basic Auth
+
+???
+
+Not all apps require authentication
 
 ---
 
@@ -138,6 +160,10 @@ $ tree app/assets/javascripts
 │   └── components
 └── views
 ```
+
+???
+
+setup
 
 ---
 
@@ -219,7 +245,7 @@ end
 
 layout: false
 
-# ember-rails: ActiveModel Adapter
+# ember-rails &amp; Rails API
 
 `app/assets/javascripts/adapters/application.js`:
 
@@ -408,6 +434,14 @@ layout: false
 * Deep integration with Sprockets &amp; the Asset Pipeline
 * No change to your deployment process
 * Enables true end-to-end testing with JavaScript enabled feature tests
+* Allows Session based authentication
+* Can inject metadata into the HTML before Ember takes over
+* Version controlled in the same repository as Rails app
+
+???
+
+*Accessing* the Ember app is authenticated, but navigation within the app is up
+to the app itself
 
 ---
 
@@ -580,13 +614,13 @@ $ heroku config:set BUILDPACK_URL=https://github.com/tonycoco/heroku-buildpack-e
 $ git push heroku master
 ```
 
-## 👍
+### 👍
 
 * Simple
 * Free (for the time being)
 * Future integration with FastBoot?
 
-## 👎
+### 👎
 
 * Serving static files from a web process is inefficient
 * No CDN support out of the box
@@ -603,15 +637,22 @@ $ ember install:addon ember-cli-divshot
 $ ember divshot push production
 ```
 
-## 👍
+### 👍
 
 * Simple
 * Free (for low-bandwidth apps)
 * Integrated Platform (think Heroku, for static sites)
 
-## 👎
+### 👎
 
-* Can't integrate with FastBoot
+* Doesn't integrate with FastBoot
+
+???
+
+FastBoot is still up in the air, but:
+
+* would require node and a web process
+* Divshot serves *static* assets
 
 ---
 
@@ -627,12 +668,12 @@ $ open http://example.com/app?revision=my-app:$SHA
 $ ember deploy:activate $SHA
 ```
 
-## 👍
+### 👍
 
 * Maintained by `ember-cli` core team
 * Adapter pattern for deploys
 
-## 👎
+### 👎
 
 * Recently merged 3 competing solutions. Details are still in flux
 * Only official support for Redis / S3 deployments
@@ -640,9 +681,67 @@ $ ember deploy:activate $SHA
 ---
 
 layout: false
+
+# ember-cli 👍
+
+* Blessed by the Core Team
+* Future development with integration in mind
+  * Version upgrades will be done through CLI
+  * Ember.js and Ember-Data are CLI projects
+* Community growth and innovation around the CLI
+  * `ember install:addon my-cool-widget`
+  * `ember generate my-cool-widget`
+* Build &amp; Deploy anywhere
+  * Upload assets to S3, Dropbox, GitHub pages, Divshot, FTP to your GeoCities
+    page, etc.
+  * Serve behind a CDN like Cloudfront, Fastly, etc.
+  * Serve index from Redis within a Rails app
+  * Push to Divshot or Heroku
+* Separate project, seperate version control
+
+???
+
+* FastBoot and Heroku?
+
+* Once built, we have all the same benefits as `&lt; static &gt;`
+
+* Version control seperately allows for clearer diffs, different development
+momentum
+
+---
+
+# ember-cli 👎
+
+* Separate project, seperate version control
+* Can't run truly end-to-end automated tests
+* Unless served from within API server, requires separate domain
+  * Requires client-side authentication (Token / Basic auth)
+  * Requires CORS support
+
+???
+
+* Version control seperately can be difficult to maintain synchronicity between
+API and client
+  * tracking down bugs in separate repositories can be complex and confusing
+* Unless serving assets from within Rails, session-based authentication won't work
+
+---
+
 class: center, middle
 
 # ember-cli-rails
+
+???
+
+Tool that provides glue code between Rails and EmberCLI
+
+* separate toolchains
+  * ruby, bundler, sprockets
+  * node, npm, bower, broccoli
+  * both are  `"good"`, but at different things
+* separate purposes
+* end-to-end testing
+* single or multiple deployments
 
 ---
 
@@ -651,6 +750,11 @@ layout: true
 # ember-cli-rails
 
 ---
+
+```console
+$ ember new frontend
+$ npm install --save-dev ember-cli-rails-addon@0.0.11
+```
 
 `Gemfile`:
 
@@ -664,11 +768,6 @@ gem "ember-cli-rails"
 EmberCLI.configure do |config|
  config.app :frontend, path: Rails.root.join("frontend")
 end
-```
-
-```console
-$ ember new frontend
-$ npm install --save-dev ember-cli-rails-addon@0.0.11
 ```
 
 ---
@@ -688,6 +787,40 @@ end
 <%= include_ember_stylesheet_tags :frontend %>
 ```
 
+???
+
+* Route in Development only?
+
+---
+
+layout: false
+
+# ember-cli-rails: libraries and addons
+
+## [`EmberAddons`](http://www.emberaddons.com/?query=jquery-ui)
+
+```console
+$ cd path/to/frontend
+$ ember install:addon ember-cli-jquery-ui
+```
+
+`path/to/frontend/Brocfile.js`:
+
+```javascript
+var app = new EmberApp({
+  "ember-cli-jquery-ui": { "theme": "ui-darkness" },
+});
+```
+
+`path/to/frontend/app/templates/schedule.hbs`:
+
+```hbs
+{{jqui-datepicker value=model.startDate}}
+```
+
+???
+
+* Same as `ember-cli`, only difference is the path to the frontend
 ---
 
 layout: false
@@ -724,16 +857,32 @@ feature "User does something", :js do
 end
 ```
 
+???
+
+# EmberCLI app and Rails app must live on same file system
+
+* no problem locally
+* CI must have access to and be able to build the ember-cli app
+
 ---
 
-# ember-cli-rails &amp; [heroku][heroku-example]
+class: center, middle
 
-`.buildpacks`:
+# ember-cli-rails deployments
 
-```console
-https://github.com/heroku/heroku-buildpack-nodejs.git#v68
-https://github.com/heroku/heroku-buildpack-ruby.git#v129
-```
+???
+
+# Same options as before
+
+* One exception: if your apps are in the same repository
+
+---
+
+layout: true
+
+# ember-cli-rails deployments: [heroku](https://github.com/seanpdoyle/ember-cli-rails-heroku-example)
+
+---
 
 `Gemfile`:
 
@@ -747,9 +896,14 @@ $ heroku config:add BUILDPACK_URL=https://github.com/heroku/heroku-buildpack-mul
 $ heroku config:add NPM_CONFIG_PRODUCTION=false
 ```
 
----
+`.buildpacks`:
 
-# ember-cli-rails &amp; [heroku][heroku-example]
+```console
+https://github.com/heroku/heroku-buildpack-nodejs.git#v68
+https://github.com/heroku/heroku-buildpack-ruby.git#v129
+```
+
+---
 
 [`package.json`](https://github.com/heroku/heroku-buildpack-nodejs/pull/203):
 
@@ -777,12 +931,91 @@ $ heroku config:add NPM_CONFIG_PRODUCTION=false
 $ git push heroku master
 ```
 
-[heroku-example]: https://github.com/seanpdoyle/ember-cli-rails-heroku-example
+???
+
+# Supports multiple ember apps
+
+* all must be co-located in the same repository for heroku deploys to work
+
+---
+
+layout: false
+class: center, middle
+
+# DISCLAIMER
+
+???
+
+# Everything is still in flux
+
+* FastBoot hasn't settled yet
+* `ember-cli-rails` ideas / plans are as follows
+
+---
+
+# ember-cli-rails: `heroku` &amp; `FastBoot`
+
+`config/initializers/ember.rb`:
+
+```ruby
+if Rails.env.development?
+  proxy_root = URI.parse(Rails.root.join("frontend").to_s)
+elsif Rails.env.staging?
+  proxy_root = URI.parse("http://staging.example.com")
+else
+  proxy_root = URI.parse("https://production.example.com")
+end
+
+EmberCLI.configuration do |config|
+ config.app :frontend, proxy_root: proxy_root
+end
+```
+
+---
+
+# ember-cli-rails 👍
+
+* Good start to transitioning out of `ember-rails`
+* Use EmberCLI's tools while staying in your comfort zone
+* Focusses on improving workflow
+* Best of both worlds
+* Stellar team of maintainers
+
+![contributors](images/maintainer.png)
+
+
+???
+
+* Improve workflow from development to production
+* Best of both worlds: flexible enough to support ember-cli and rails
+innovation
+
+---
+
+# ember-cli-rails 👎
+
+* Deploying co-located apps to Heroku is **slow**
+  * Turn off uglification
+  * `node_modules` and `bower_components` caching should help
+
+**File any issues on GitHub**
+
+https://github.com/rwz/ember-cli-rails/issues
+
+---
+
+class: center, middle
+
+# TL;DR
+
+### `ember-cli` is the future
+
+###`ember-cli-rails` will help you keep up
 
 
     </textarea>
     <script src="http://static.jsbin.com/js/embed.js"></script>
-    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    <script src="../remark-latest.min.js">
     </script>
     <script>
       var slideshow = remark.create({
