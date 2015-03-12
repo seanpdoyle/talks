@@ -22,6 +22,16 @@
 
       img { max-width: 80%; }
 
+      li {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      .tight li {
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+
     </style>
   </head>
   <body>
@@ -50,7 +60,7 @@ class: center, middle
 
 layout: true
 
-# &lt; script &gt;
+# &lt; script &gt; http://emberjs.jsbin.com
 
 ---
 
@@ -78,7 +88,7 @@ layout: false
 
 * Simple
 * Static
-* Clean separation of Client and Server
+* Clear boundaries between Client and Server
 * Easy to deploy
   * Upload to S3, Dropbox, GitHub pages, Divshot, FTP to your GeoCities page, etc
   * Serve behind a CDN like Cloudfront, Fastly, etc.
@@ -123,6 +133,13 @@ class: center, middle
 
 # ember-rails
 
+???
+
+* toolchain built on ruby, rails, bundler
+* integrates with Sprockets and Asset Pipeline
+* rubygem maintained by Ember.js GitHub repo
+* Ember lives WITHIN Rails app
+
 ---
 
 layout: true
@@ -163,7 +180,9 @@ $ tree app/assets/javascripts
 
 ???
 
-setup
+* setup
+
+* scaffolds out conventional directory structure
 
 ---
 
@@ -197,6 +216,10 @@ window.App = Ember.Application.create();
 //= require_self
 ```
 
+???
+
+integrates with Sprockets and Asset Pipeline
+
 ---
 
 `app/views/layouts/application.html.erb`:
@@ -212,7 +235,7 @@ window.App = Ember.Application.create();
   <%= stylesheet_link_tag "application", media: "all" %>
 </head>
 <body>
-  <%= javascript_include_tag "application" %>
+*  <%= javascript_include_tag "application" %>
 </body>
 </html>
 ```
@@ -241,6 +264,12 @@ class EmberController &lt; ApplicationController
   end
 end
 ```
+
+???
+
+* route all HTML requests to Ember, all JSON requests to API
+* not necessary if your project is using `jquery_ujs` (which it probably is)
+
 ---
 
 layout: false
@@ -258,6 +287,10 @@ App.ApplicationAdapter = DS.ActiveModelAdapter({
   }.property().volatile(),
 });
 ```
+
+???
+
+all non-GET XHR require Cross Site Request Forgery protection
 
 ---
 
@@ -288,6 +321,14 @@ end
  *= require jquery-ui/themes/base/datepicker.css
  */
 ```
+
+???
+
+* Integrate with jQueryUI through sprockets and rails-assets
+
+
+* Rails assets aside:
+  * turns bower packages into "rails gems"
 
 ---
 
@@ -344,6 +385,10 @@ $ tree spec/javascript
 └── views
 ```
 
+???
+
+Testing split: fast mocked qunit, slow integrate capybara
+
 ---
 
 `spec/javascript/test_squad.rb`:
@@ -390,6 +435,10 @@ $ open http://localhost:3000/tests
 
 <img src="https://github.com/fnando/test_squad/raw/master/screenshots/qunit.png" alt="test squad">
 
+???
+
+Write normal QUnit / Mocha style JavaScript tests
+
 ---
 
 layout: true
@@ -401,7 +450,7 @@ layout: true
 `spec/features/user_does_something_spec.rb`:
 
 ```ruby
-feature "User does something", :js do
+* feature "User does something", :js do
   scenario "inside of ember" do
     visit "/"
 
@@ -409,6 +458,10 @@ feature "User does something", :js do
   end
 end
 ```
+
+???
+
+JavaScript enabled capybara run in a full-fledged browser
 
 ---
 layout: false
@@ -422,8 +475,12 @@ require File.expand_path('../config/application', __FILE__)
 
 MyApp::Application.load_tasks
 
-task default: [:spec, :test_squad]
+* task default: [:spec, :test_squad]
 ```
+
+???
+
+Integrate with Rake and CI
 
 ---
 
@@ -461,6 +518,14 @@ to the app itself
 class: center, middle
 
 # ember-cli
+
+???
+
+* command line interface
+* similar to Rails' cli (`rails new`, `rails server`, `rails generate`)
+* Blessed by the core team
+* toolchain built on node, bower, npm
+* ember app lives in its own dedicated project
 
 ---
 
@@ -520,6 +585,10 @@ var app = new EmberApp({
 {{jqui-datepicker value=model.startDate}}
 ```
 
+???
+
+EmberAddons: huge community, ecosystem
+
 ---
 
 layout: true
@@ -558,6 +627,10 @@ export default DS.ActiveModelAdapter({
 });
 ```
 
+???
+
+dedicated configuration
+
 ---
 
 `Start Rails server`:
@@ -577,6 +650,10 @@ $ ember server
 ```console
 $ open http://localhost:4200
 ```
+
+???
+
+Separately running processes
 
 ---
 
@@ -604,6 +681,10 @@ $ open http://localhost:4200/tests
 $ npm test
 ```
 
+???
+
+Separately running processes
+
 ---
 
 # ember-cli deployments: [`heroku`](https://github.com/tonycoco/heroku-buildpack-ember-cli)
@@ -616,15 +697,19 @@ $ git push heroku master
 
 ### 👍
 
+.tight[
 * Simple
 * Free (for the time being)
 * Future integration with FastBoot?
+]
 
 ### 👎
 
+.tight[
 * Serving static files from a web process is inefficient
 * No CDN support out of the box
 * Deploys are lengthy due to installing dependencies and compiling assets
+]
 
 ---
 
@@ -639,9 +724,11 @@ $ ember divshot push production
 
 ### 👍
 
+.tight[
 * Simple
 * Free (for low-bandwidth apps)
 * Integrated Platform (think Heroku, for static sites)
+]
 
 ### 👎
 
@@ -670,13 +757,17 @@ $ ember deploy:activate $SHA
 
 ### 👍
 
+.tight[
 * Maintained by `ember-cli` core team
 * Adapter pattern for deploys
+]
 
 ### 👎
 
+.tight[
 * Recently merged 3 competing solutions. Details are still in flux
 * Only official support for Redis / S3 deployments
+]
 
 ---
 
@@ -684,6 +775,7 @@ layout: false
 
 # ember-cli 👍
 
+.tight[
 * Blessed by the Core Team
 * Future development with integration in mind
   * Version upgrades will be done through CLI
@@ -698,6 +790,7 @@ layout: false
   * Serve index from Redis within a Rails app
   * Push to Divshot or Heroku
 * Separate project, seperate version control
+]
 
 ???
 
@@ -769,6 +862,16 @@ EmberCLI.configure do |config|
  config.app :frontend, path: Rails.root.join("frontend")
 end
 ```
+
+???
+
+* setup
+
+* point the plugin to the EmberCLI directory
+
+* supports multiple Ember apps
+
+
 
 ---
 
@@ -902,6 +1005,10 @@ $ heroku config:add NPM_CONFIG_PRODUCTION=false
 https://github.com/heroku/heroku-buildpack-nodejs.git#v68
 https://github.com/heroku/heroku-buildpack-ruby.git#v129
 ```
+
+???
+
+mention example project
 
 ---
 
