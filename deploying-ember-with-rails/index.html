@@ -41,6 +41,12 @@ class: center, middle
 
 ---
 
+class: center, middle
+
+# &lt; script &gt;
+
+---
+
 layout: true
 
 # &lt; script &gt;
@@ -74,6 +80,7 @@ layout: false
   * GitHub pages
   * Upload to S3, serve over Cloudfront CDN
   * FTP to your GeoCities page
+  * Serve from Rails' `public/` directory
 
 ---
 
@@ -87,6 +94,12 @@ layout: false
 * No first class test support
 * API via Cross-Origin Resource Sharing
   * [not yet *fully* supported on all platforms](http://caniuse.com/#feat=cors)
+
+---
+
+class: center, middle
+
+# ember-rails
 
 ---
 
@@ -335,6 +348,85 @@ task default: [:spec, :test_squad]
   * Integrating with EmberCLI addon ecosystem is tedious
 * Front-end code buried in `app/assets/javascripts`
 * No separation between Client and Server
+
+---
+
+class: center, middle
+
+# ember-cli
+
+---
+
+# ember-cli
+
+```console
+$ brew install npm
+$ brew install nvm
+$ nvm install 0.12.0
+```
+
+```console
+$ npm install -g bower
+$ npm install -g ember-cli@0.2.0
+```
+
+```console
+$ ember new my-app
+$ tree my-app/app
+├── app.js
+├── components
+├── controllers
+├── helpers
+├── index.html
+├── models
+├── router.js
+├── routes
+├── styles
+│   └── app.css
+├── templates
+│   ├── application.hbs
+│   └── components
+└── views
+```
+
+---
+
+# ember-cli &amp; Rails API
+
+`app/adapters/application.js`:
+
+```javascript
+import DS from 'ember-data';
+
+export default DS.ActiveModelAdapter({
+  host: "https://api.example.com",
+
+  headers: {
+    HTTP_AUTHORIZATION: 'Token token="abc", nonce="def"',
+  }
+});
+```
+
+---
+
+# ember-cli deployments: `heroku`
+
+[`tonycoco/heroku-buildpack-ember-cli`](https://github.com/tonycoco/heroku-buildpack-ember-cli)
+
+```console
+$ heroku create
+$ heroku config:set BUILDPACK_URL=https://github.com/tonycoco/heroku-buildpack-ember-cli.git
+$ git push heroku master
+```
+
+
+
+---
+
+layout: false
+class: center, middle
+
+# ember-cli-rails
 
 ---
 
