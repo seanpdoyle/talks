@@ -211,6 +211,55 @@ class EmberController &lt; ApplicationController
   end
 end
 ```
+---
+
+layout: true
+
+# ember-rails: libraries and addons
+
+---
+
+`Gemfile`:
+
+```ruby
+source "https://rails-assets.org" do
+  gem "rails-assets-jquery-ui"
+end
+```
+
+`app/assets/javascripts/application.js`:
+
+```javascript
+//= require jquery-ui/ui/datepicker
+```
+
+`app/assets/stylesheets/application.css`:
+
+```css
+/*
+ *= require jquery-ui/themes/base/datepicker.css
+ */
+```
+
+---
+
+`app/assets/javascripts/app/components/ui-datepicker.js`:
+
+```javascript
+App.UiDatepickerComponent = Ember.Component.extend({
+  tagName: "input",
+
+  setupDatepicker: function() {
+    this.$().datepicker();
+  }.on("didInsertElement"),
+});
+```
+
+`app/assets/javascripts/app/templates/schedule.hbs`:
+
+```hbs
+{{ui-datepicker value=model.startDate}}
+```
 
 ---
 
@@ -330,6 +379,8 @@ task default: [:spec, :test_squad]
 
 ---
 
+layout: false
+
 # ember-rails 👍
 
 * Deep integration with Sprockets &amp; the Asset Pipeline
@@ -391,20 +442,86 @@ $ tree my-app/app
 
 ---
 
+layout: true
+
 # ember-cli &amp; Rails API
+
+---
+
+`config/environment.js`:
+
+```javascript
+module.exports = function(environment) {
+  // ... other environment setup ...
+  if (environment === 'development') {
+    ENV.APP.API_HOST = 'http://localhost:3000';
+  }
+
+  if (environment === 'production') {
+    ENV.APP.API_HOST = 'https://api.example.com';
+  }
+};
+```
 
 `app/adapters/application.js`:
 
 ```javascript
-import DS from 'ember-data';
+import DS from "ember-data";
+import ENV from "../../config/environment";
 
 export default DS.ActiveModelAdapter({
-  host: "https://api.example.com",
+  host: ENV.APP.API_HOST,
 
   headers: {
     HTTP_AUTHORIZATION: 'Token token="abc", nonce="def"',
   }
 });
+```
+
+---
+
+`Start Rails server`:
+
+```console
+$ bin/rails server --port 3000
+```
+
+`Start Ember server`:
+
+```console
+$ ember server
+```
+
+`Browse Ember app`:
+
+```console
+$ open http://localhost:4200
+```
+
+---
+
+layout: false
+
+# ember-cli tests
+
+`Test in the console:`
+
+```console
+$ ember test --server
+$ open http://localhost:7357
+```
+
+`Test in the browser:`
+
+```console
+$ ember server
+$ open http://localhost:4200/tests
+```
+
+`Continuous Integration:`
+
+```console
+$ npm test
 ```
 
 ---
